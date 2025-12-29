@@ -11,7 +11,7 @@
 window.APP_ENV = {
     // API Key for BatchBridge Price Lookup
     API_KEY: "12345-ABCDE-BATCHBRIDGE",
-    
-    // API Base URL (optional, if you want to centralize it)
-    API_BASE: "https://pricelookup.batchbridge.com"
+
+    // API Base URL (Vercel Proxy)
+    API_BASE: "/api-proxy"
 };

@@ -350,16 +350,16 @@
             resultBox.style.display = 'none';
             spinner.style.display = 'block';
 
-            // Construct target URL
-            const targetUrl = `https://pricelookup.batchbridge.com/api/api/Offers/lowest?isbn=${encodeURIComponent(isbn)}&condition=${encodeURIComponent(condition)}&marketplace=${encodeURIComponent(marketplace)}`;
-
-            // Use CORS Proxy
-            const safeProxyUrl = "https://corsproxy.io/?" + encodeURIComponent(targetUrl);
+            // Construct target URL using Vercel Proxy
+            const apiBase = window.APP_ENV.API_BASE;
+            // Remove potential double slashes if API_BASE handles it, but here we perform simple concatenation
+            // The rewrite rule is /api-proxy/:path*, so we append /api/api/Offers/lowest...
+            const targetUrl = `${apiBase}/api/api/Offers/lowest?isbn=${encodeURIComponent(isbn)}&condition=${encodeURIComponent(condition)}&marketplace=${encodeURIComponent(marketplace)}`;
 
             try {
-                console.log("Fetching via proxy:", safeProxyUrl);
+                console.log("Fetching price from:", targetUrl);
 
-                const res = await fetch(safeProxyUrl, {
+                const res = await fetch(targetUrl, {
                     headers: { 'x-api-key': API_KEY }
                 });
 
