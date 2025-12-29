@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -63,9 +64,10 @@
             max-width: 300px;
             border-radius: 12px;
             overflow: hidden;
-            display: none; /* Hidden by default until active */
+            display: none;
+            /* Hidden by default until active */
         }
-        
+
         .scan-btn {
             background-color: var(--text-color);
             color: #fff;
@@ -97,7 +99,8 @@
             color: #444;
         }
 
-        input[type="text"], select {
+        input[type="text"],
+        select {
             width: 100%;
             padding: 12px;
             border: 1px solid var(--border-color);
@@ -108,7 +111,8 @@
             font-family: inherit;
         }
 
-        input:focus, select:focus {
+        input:focus,
+        select:focus {
             outline: none;
             border-color: var(--primary-color);
         }
@@ -158,7 +162,7 @@
             font-size: 14px;
             line-height: 1.5;
         }
-        
+
         .result-key {
             font-weight: 700;
             color: #333;
@@ -182,8 +186,13 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         .flash {
@@ -191,233 +200,259 @@
         }
 
         @keyframes flashAnimation {
-            0% { box-shadow: 0 0 0 0 rgba(0, 200, 81, 0.7); border-color: var(--success-color); }
-            50% { box-shadow: 0 0 0 10px rgba(0, 200, 81, 0); border-color: var(--success-color); }
-            100% { box-shadow: 0 0 0 0 rgba(0, 200, 81, 0); border-color: var(--border-color); }
+            0% {
+                box-shadow: 0 0 0 0 rgba(0, 200, 81, 0.7);
+                border-color: var(--success-color);
+            }
+
+            50% {
+                box-shadow: 0 0 0 10px rgba(0, 200, 81, 0);
+                border-color: var(--success-color);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 200, 81, 0);
+                border-color: var(--border-color);
+            }
         }
     </style>
 </head>
+
 <body>
 
-<div class="container">
-    <h1>📘 Price Lookup</h1>
+    <div class="container">
+        <h1>📘 Price Lookup</h1>
 
-    <div class="card">
-        <!-- Camera Section -->
-        <div class="camera-wrapper">
-             <div id="reader"></div>
-             <button id="toggleScanBtn" class="scan-btn">📷 Scan Barcode</button>
-        </div>
-
-        <!-- Form -->
-        <div class="form-group">
-            <label for="isbnInput">ISBN</label>
-            <input type="text" id="isbnInput" placeholder="Enter ISBN manually" enterkeyhint="search">
-        </div>
-
-        <div class="row form-group">
-            <div class="col">
-                <label for="marketplaceSelect">Marketplace</label>
-                <select id="marketplaceSelect">
-                    <option value="AmazonUK">AmazonUK</option>
-                    <option value="AmazonUS">AmazonUS</option>
-                    <option value="AmazonDE">AmazonDE</option>
-                    <option value="AmazonFR">AmazonFR</option>
-                    <option value="AmazonCA">AmazonCA</option>
-                </select>
+        <div class="card">
+            <!-- Camera Section -->
+            <div class="camera-wrapper">
+                <div id="reader"></div>
+                <button id="toggleScanBtn" class="scan-btn">📷 Scan Barcode</button>
             </div>
-            <div class="col">
-                <label for="conditionSelect">Condition</label>
-                <select id="conditionSelect">
-                    <option value="New">New</option>
-                    <option value="Used">Used</option>
-                </select>
+
+            <!-- Form -->
+            <div class="form-group">
+                <label for="isbnInput">ISBN</label>
+                <input type="text" id="isbnInput" placeholder="Enter ISBN manually" enterkeyhint="search">
             </div>
-        </div>
 
-        <button id="getPriceBtn" class="btn-primary">Get Price</button>
+            <div class="row form-group">
+                <div class="col">
+                    <label for="marketplaceSelect">Marketplace</label>
+                    <select id="marketplaceSelect">
+                        <option value="AmazonUK">AmazonUK</option>
+                        <option value="AmazonUS">AmazonUS</option>
+                        <option value="AmazonDE">AmazonDE</option>
+                        <option value="AmazonFR">AmazonFR</option>
+                        <option value="AmazonCA">AmazonCA</option>
+                    </select>
+                </div>
+                <div class="col">
+                    <label for="conditionSelect">Condition</label>
+                    <select id="conditionSelect">
+                        <option value="New">New</option>
+                        <option value="Used">Used</option>
+                    </select>
+                </div>
+            </div>
 
-        <!-- Results -->
-        <div id="spinner" class="spinner"></div>
-        <div id="resultBox" class="result-box">
-            <p class="hint">Scan ISBN barcode or enter manually</p>
+            <button id="getPriceBtn" class="btn-primary">Get Price</button>
+
+            <!-- Results -->
+            <div id="spinner" class="spinner"></div>
+            <div id="resultBox" class="result-box">
+                <p class="hint">Scan ISBN barcode or enter manually</p>
+            </div>
         </div>
     </div>
-</div>
 
-<script>
-    // Configuration
-    const API_BASE = "https://pricelookup.batchbridge.com";
-    const API_KEY = "12345-ABCDE-BATCHBRIDGE";
+    <script>
+        // Configuration
+        const API_BASE = "https://pricelookup.batchbridge.com";
+        const API_KEY = "12345-ABCDE-BATCHBRIDGE";
 
-    // Elements
-    const isbnInput = document.getElementById('isbnInput');
-    const marketplaceSelect = document.getElementById('marketplaceSelect');
-    const conditionSelect = document.getElementById('conditionSelect');
-    const getPriceBtn = document.getElementById('getPriceBtn');
-    const resultBox = document.getElementById('resultBox');
-    const spinner = document.getElementById('spinner');
-    const toggleScanBtn = document.getElementById('toggleScanBtn');
-    const readerDiv = document.getElementById('reader');
+        // Elements
+        const isbnInput = document.getElementById('isbnInput');
+        const marketplaceSelect = document.getElementById('marketplaceSelect');
+        const conditionSelect = document.getElementById('conditionSelect');
+        const getPriceBtn = document.getElementById('getPriceBtn');
+        const resultBox = document.getElementById('resultBox');
+        const spinner = document.getElementById('spinner');
+        const toggleScanBtn = document.getElementById('toggleScanBtn');
+        const readerDiv = document.getElementById('reader');
 
-    let html5QrcodeScanner = null;
-    let isScanning = false;
+        let html5QrcodeScanner = null;
+        let isScanning = false;
 
-    // Helper: Flatten nested objects
-    function flattenEntries(obj, parentKey = '') {
-        let entries = [];
-        for (const [key, value] of Object.entries(obj)) {
-            const newKey = parentKey ? `${parentKey}-${key}` : key;
-            if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
-                entries = entries.concat(flattenEntries(value, newKey));
-            } else if (Array.isArray(value)) {
-                value.forEach((item, index) => {
-                    entries = entries.concat(flattenEntries({[index]: item}, newKey));
-                });
-            } else {
-                entries.push([newKey, value]);
+        // Helper: Flatten nested objects
+        function flattenEntries(obj, parentKey = '') {
+            let entries = [];
+            for (const [key, value] of Object.entries(obj)) {
+                const newKey = parentKey ? `${parentKey}-${key}` : key;
+                if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
+                    entries = entries.concat(flattenEntries(value, newKey));
+                } else if (Array.isArray(value)) {
+                    value.forEach((item, index) => {
+                        entries = entries.concat(flattenEntries({ [index]: item }, newKey));
+                    });
+                } else {
+                    entries.push([newKey, value]);
+                }
             }
-        }
-        return entries;
-    }
-
-    function formatKey(key) {
-        return key
-            .replace(/([A-Z])/g, ' $1')
-            .replace(/_/g, ' ')
-            .replace(/^./, str => str.toUpperCase());
-    }
-
-    function renderResults(data, initialParams) {
-        resultBox.innerHTML = '';
-        const fullData = {
-            ...data,
-            isbn: data.isbn || initialParams.isbn,
-            marketplace: data.marketplace || initialParams.marketplace,
-            condition: data.condition || initialParams.condition
-        };
-
-        const flatEntries = flattenEntries(fullData);
-
-        if (flatEntries.length === 0) {
-            resultBox.innerHTML = '<p class="hint">No data found.</p>';
-            return;
+            return entries;
         }
 
-        flatEntries.forEach(([key, val]) => {
-            const displayValue = val === null || val === undefined ? 'N/A' : String(val);
-            const p = document.createElement('p');
-            p.className = 'result-item';
-            p.innerHTML = `<span class="result-key">${formatKey(key)}:</span> ${displayValue}`;
-            resultBox.appendChild(p);
-        });
-    }
-
-    async function fetchLowestPrice() {
-        const isbn = isbnInput.value.trim();
-        const marketplace = marketplaceSelect.value;
-        const condition = conditionSelect.value;
-
-        if (!isbn) {
-            alert("Please enter an ISBN.");
-            return;
+        function formatKey(key) {
+            return key
+                .replace(/([A-Z])/g, ' $1')
+                .replace(/_/g, ' ')
+                .replace(/^./, str => str.toUpperCase());
         }
 
-        // UI Loading
-        getPriceBtn.disabled = true;
-        resultBox.style.display = 'none';
-        spinner.style.display = 'block';
+        function renderResults(data, initialParams) {
+            resultBox.innerHTML = '';
+            const fullData = {
+                ...data,
+                isbn: data.isbn || initialParams.isbn,
+                marketplace: data.marketplace || initialParams.marketplace,
+                condition: data.condition || initialParams.condition
+            };
 
-        try {
-            const url = `${API_BASE}/api/api/Offers/lowest?isbn=${encodeURIComponent(isbn)}&condition=${encodeURIComponent(condition)}&marketplace=${encodeURIComponent(marketplace)}`;
-            
-            const res = await fetch(url, {
-                headers: { 'x-api-key': API_KEY }
+            const flatEntries = flattenEntries(fullData);
+
+            if (flatEntries.length === 0) {
+                resultBox.innerHTML = '<p class="hint">No data found.</p>';
+                return;
+            }
+
+            flatEntries.forEach(([key, val]) => {
+                const displayValue = val === null || val === undefined ? 'N/A' : String(val);
+                const p = document.createElement('p');
+                p.className = 'result-item';
+                p.innerHTML = `<span class="result-key">${formatKey(key)}:</span> ${displayValue}`;
+                resultBox.appendChild(p);
             });
+        }
 
-            if (!res.ok) {
-                const text = await res.text().catch(() => null);
-                throw new Error(text || `Error ${res.status}`);
+        async function fetchLowestPrice() {
+            const isbn = isbnInput.value.trim();
+            const marketplace = marketplaceSelect.value;
+            const condition = conditionSelect.value;
+
+            if (!isbn) {
+                alert("Please enter an ISBN.");
+                return;
             }
 
-            const data = await res.json();
-            renderResults(data, { isbn, marketplace, condition });
+            // UI Loading
+            getPriceBtn.disabled = true;
+            resultBox.style.display = 'none';
+            spinner.style.display = 'block';
 
-        } catch (err) {
-            console.error(err);
-            resultBox.innerHTML = `<p style="color:red; text-align:center;">Error: ${err.message}</p>`;
-        } finally {
-            getPriceBtn.disabled = false;
-            spinner.style.display = 'none';
-            resultBox.style.display = 'block';
-        }
-    }
+            const targetUrl = `${API_BASE}/api/api/Offers/lowest?isbn=${encodeURIComponent(isbn)}&condition=${encodeURIComponent(condition)}&marketplace=${encodeURIComponent(marketplace)}`;
 
-    // Event Listeners
-    getPriceBtn.addEventListener('click', fetchLowestPrice);
-    isbnInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') fetchLowestPrice();
-    });
+            try {
+                // First try direct request
+                console.log("Attempting direct fetch...");
+                let res;
+                try {
+                    res = await fetch(targetUrl, {
+                        headers: { 'x-api-key': API_KEY }
+                    });
+                } catch (directErr) {
+                    console.warn("Direct fetch failed (likely CORS), switching to proxy.", directErr);
+                    // Fallback to CORS proxy
+                    // Using corsproxy.io which supports headers
+                    const proxyUrl = "https://corsproxy.io/?" + encodeURIComponent(targetUrl);
+                    res = await fetch(proxyUrl, {
+                        headers: { 'x-api-key': API_KEY }
+                    });
+                }
 
-    // Scanner Logic
-    toggleScanBtn.addEventListener('click', () => {
-        if (isScanning) {
-            stopScanning();
-        } else {
-            startScanning();
-        }
-    });
+                if (!res.ok) {
+                    const text = await res.text().catch(() => null);
+                    throw new Error(text || `Error ${res.status}`);
+                }
 
-    function startScanning() {
-        readerDiv.style.display = 'block';
-        toggleScanBtn.textContent = '❌ Stop Scanning';
-        
-        html5QrcodeScanner = new Html5Qrcode("reader");
-        
-        const config = { fps: 10, qrbox: { width: 250, height: 150 } };
-        
-        html5QrcodeScanner.start(
-            { facingMode: "environment" }, 
-            config,
-            onScanSuccess,
-            (errorMessage) => {
-                // parse error, ignore mainly
+                const data = await res.json();
+                renderResults(data, { isbn, marketplace, condition });
+
+            } catch (err) {
+                console.error(err);
+                resultBox.innerHTML = `<p style="color:red; text-align:center;">Error: ${err.message}<br><small>If on mobile web, ensure data connection.</small></p>`;
+            } finally {
+                getPriceBtn.disabled = false;
+                spinner.style.display = 'none';
+                resultBox.style.display = 'block';
             }
-        ).then(() => {
-            isScanning = true;
-        }).catch(err => {
-            console.error(err);
-            alert("Error starting camera: " + err);
-            stopScanning();
+        }
+
+        // Event Listeners
+        getPriceBtn.addEventListener('click', fetchLowestPrice);
+        isbnInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') fetchLowestPrice();
         });
-    }
 
-    function stopScanning() {
-        if (html5QrcodeScanner) {
-            html5QrcodeScanner.stop().then(() => {
-                readerDiv.style.display = 'none';
-                toggleScanBtn.textContent = '📷 Scan Barcode';
-                html5QrcodeScanner.clear();
-                isScanning = false;
-            }).catch(err => console.error("Failed to stop scanning", err));
+        // Scanner Logic
+        toggleScanBtn.addEventListener('click', () => {
+            if (isScanning) {
+                stopScanning();
+            } else {
+                startScanning();
+            }
+        });
+
+        function startScanning() {
+            readerDiv.style.display = 'block';
+            toggleScanBtn.textContent = '❌ Stop Scanning';
+
+            html5QrcodeScanner = new Html5Qrcode("reader");
+
+            const config = { fps: 10, qrbox: { width: 250, height: 150 } };
+
+            html5QrcodeScanner.start(
+                { facingMode: "environment" },
+                config,
+                onScanSuccess,
+                (errorMessage) => {
+                    // parse error, ignore mainly
+                }
+            ).then(() => {
+                isScanning = true;
+            }).catch(err => {
+                console.error(err);
+                alert("Error starting camera: " + err);
+                stopScanning();
+            });
         }
-    }
 
-    function onScanSuccess(decodedText, decodedResult) {
-        // Handle scan
-        console.log(`Scan result: ${decodedText}`, decodedResult);
-        isbnInput.value = decodedText;
-        
-        // Flash effect
-        isbnInput.classList.add('flash');
-        setTimeout(() => isbnInput.classList.remove('flash'), 500);
+        function stopScanning() {
+            if (html5QrcodeScanner) {
+                html5QrcodeScanner.stop().then(() => {
+                    readerDiv.style.display = 'none';
+                    toggleScanBtn.textContent = '📷 Scan Barcode';
+                    html5QrcodeScanner.clear();
+                    isScanning = false;
+                }).catch(err => console.error("Failed to stop scanning", err));
+            }
+        }
 
-        // Stop scanning after success
-        stopScanning();
+        function onScanSuccess(decodedText, decodedResult) {
+            // Handle scan
+            console.log(`Scan result: ${decodedText}`, decodedResult);
+            isbnInput.value = decodedText;
 
-        // Trigger lookup
-        fetchLowestPrice();
-    }
-</script>
+            // Flash effect
+            isbnInput.classList.add('flash');
+            setTimeout(() => isbnInput.classList.remove('flash'), 500);
+
+            // Stop scanning after success
+            stopScanning();
+
+            // Trigger lookup
+            fetchLowestPrice();
+        }
+    </script>
 </body>
+
 </html>
